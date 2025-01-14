@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FaEye } from "react-icons/fa6";
 import { FaEyeSlash } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 import { Typography, Input, Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router";
@@ -66,6 +67,17 @@ export function Registration() {
               photoURL: "https://i.postimg.cc/5tY4DpHM/Screenshot-19.png",
             })
               .then(() => {
+                toast.success("Account Created Successfully", {
+                  position: "top-center",
+                  autoClose: 2000,
+                  hideProgressBar: false,
+                  closeOnClick: false,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  transition: Bounce,
+                });
                 const user = userCredential.user;
                 console.log(user);
                 setName("");
@@ -74,11 +86,11 @@ export function Registration() {
 
                 setTimeout(() => {
                   navigate("/login");
-                });
+                }, 2000);
               })
               .catch((error) => {
                 console.log(error);
-              }, 5000);
+              });
           });
         })
         .catch((error) => {
@@ -91,6 +103,19 @@ export function Registration() {
 
   return (
     <section className="grid text-center max-h-screen items-center p-8">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       <div>
         <Typography variant="h3" color="blue-gray" className="mb-2 font-obuntu">
           Sign Up
