@@ -15,7 +15,10 @@ import {
 } from "firebase/auth";
 import app from "../firbase/firebase.config";
 
+import { getDatabase, ref, set } from "firebase/database";
+
 export function Registration() {
+  const db = getDatabase();
   const navigate = useNavigate();
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
@@ -67,9 +70,9 @@ export function Registration() {
               photoURL: "https://i.postimg.cc/5tY4DpHM/Screenshot-19.png",
             })
               .then(() => {
-                toast.success("Account Created Successfully", {
+                toast.success("Account Registered Successfully", {
                   position: "top-center",
-                  autoClose: 2000,
+                  autoClose: 1000,
                   hideProgressBar: false,
                   closeOnClick: false,
                   pauseOnHover: true,
@@ -80,16 +83,39 @@ export function Registration() {
                 });
                 const user = userCredential.user;
                 console.log(user);
-                setName("");
-                setEmail("");
-                setPassword("");
 
-                setTimeout(() => {
-                  navigate("/login");
-                }, 2000);
+                set(ref(db, "users/" + user.uid), {
+                  username: user.displayName,
+                  email: email,
+                  profile_picture: user.photoURL,
+                })
+                  .then(() => {
+                    {
+                      setName("");
+                      setEmail("");
+                      setPassword("");
+
+                      setTimeout(() => {
+                        navigate("/login");
+                      }, 2000);
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
               })
               .catch((error) => {
-                console.log(error);
+                toast.error(error, {
+                  position: "top-center",
+                  autoClose: 1000,
+                  hideProgressBar: false,
+                  closeOnClick: false,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  transition: Bounce,
+                });
               });
           });
         })
@@ -97,6 +123,17 @@ export function Registration() {
           const errorCode = error.code;
           // const errorMessage = error.message;
           setEmailError(errorCode);
+          toast.error(errorCode, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
         });
     }
   };
@@ -158,6 +195,7 @@ export function Registration() {
                 <button
                   className="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute top-2 right-1.5"
                   type="button"
+                  onClick={() => setNameError("")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -209,6 +247,7 @@ export function Registration() {
                 <button
                   className="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute top-2 right-1.5"
                   type="button"
+                  onClick={() => setEmailError("")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -262,6 +301,7 @@ export function Registration() {
                 <button
                   className="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute top-2 right-1.5"
                   type="button"
+                  onClick={() => passwordError("")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
